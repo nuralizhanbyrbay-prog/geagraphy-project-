@@ -1,0 +1,70 @@
+import streamlit as st
+import numpy as np
+import plotly.graph_objects as go
+
+# Настройка стиля
+st.set_page_config(page_title="Zenith GreenFactory AI", layout="wide")
+
+st.markdown("""
+    <style>
+    .stApp { background-color: #0b1a10; color: #e0f2f1; }
+    h1 { color: #4caf50; }
+    </style>
+    """, unsafe_allow_html=True)
+
+st.title("🌱 Zenith GreenFactory AI: Dashboard")
+st.write("“Build your idea — shape the future!” 🚀")
+
+# Sidebar
+st.sidebar.header("📊 Factory Inputs")
+production_capacity = st.sidebar.slider("Мощность завода (модулей в мес)", 10, 100, 50)
+market_demand = st.sidebar.select_slider("Спрос на рынке", options=["Low", "Medium", "High", "Critical"])
+
+# Логика ML (Прогноз прибыли)
+demand_map = {"Low": 0.5, "Medium": 1.0, "High": 1.5, "Critical": 2.2}
+forecasted_profit = production_capacity * 500 * demand_map[market_demand]
+
+# Интерфейс
+col1, col2 = st.columns([1, 2])
+
+with col1:
+    st.header("📈 Business Analytics")
+    st.metric("Прогноз прибыли ($)", f"{forecasted_profit:,}", "+12% (AI optimized)")
+    st.write("---")
+    st.write("### 👥 Workers Status")
+    st.write("✅ Engineers: Online")
+    st.write("✅ Logistics: Active")
+    st.write("### 🌍 Eco-Impact")
+    st.success("Water saved: 1,200 Liters today")
+
+with col2:
+    st.header("📦 Production Forecast (ML)")
+    
+    # Генерация данных для графика
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+    # Имитация работы ML: базовый рост + небольшие колебания
+    base_prod = np.linspace(20, production_capacity, 6)
+    noise = np.random.normal(0, 5, 6)
+    final_prod = base_prod + noise
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=months, y=final_prod, mode='lines+markers+text', 
+                            text=[f"{int(i)}" for i in final_prod], textposition="top center",
+                            line=dict(color='#4caf50', width=4),
+                            fill='tozeroy', fillcolor='rgba(76, 175, 80, 0.2)'))
+    
+    fig.update_layout(
+        title="Прогноз выпуска продукции на полгода",
+        template="plotly_dark",
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# Описание инновации
+st.write("---")
+st.header("💡 How ML helps our Business?")
+st.info("""
+**1. Предсказание спроса:** Мы не производим лишнего. ML анализирует цены на овощи и говорит заводу, сколько ферм нужно собрать.
+**2. Оптимизация ресурсов:** ИИ снижает затраты на электричество в цехах на 15%.
+""")
